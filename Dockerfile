@@ -1,15 +1,19 @@
 FROM ubuntu:18.04
-LABEL maintainer="Luke Childs <lukechilds123@gmail.com>"
 
 VOLUME ["/code"]
 WORKDIR /code
 
 ENV BOLOS_ENV /opt/bolos-env
 ENV BOLOS_SDK /opt/bolos-sdk
+ENV GCCPATH /opt/bolos-env/gcc-arm-none-eabi-5_3-2016q1/bin
+ENV CLANGPATH /opt/bolos-env/clang-arm-fropi/bin
 
 RUN apt-get update
 
-RUN apt-get install -y --no-install-recommends libc6-dev-i386 python python-pil curl ca-certificates bzip2 xz-utils git make
+RUN apt-get install -y --no-install-recommends build-essential gcc-multilib g++-multilib libc6-dev-i386 python python-pil curl ca-certificates bzip2 xz-utils git make python3 python3-pip
+
+RUN echo "Install PIL" && \
+  pip3 install Pillow
 
 RUN echo "Create install directories" && \
   mkdir ${BOLOS_ENV} ${BOLOS_SDK}
@@ -29,7 +33,7 @@ RUN echo "Install custom clang" && \
 
 RUN echo "Install Ledger Nano S SDK" && \
   git clone https://github.com/LedgerHQ/nanos-secure-sdk.git ${BOLOS_SDK} && \
-  cd ${BOLOS_SDK} && git checkout tags/nanos-1552
+  cd ${BOLOS_SDK} && git checkout tags/nanos-160
 
 COPY ./bin/init /usr/local/bin/init
 
