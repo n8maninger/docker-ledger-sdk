@@ -10,10 +10,9 @@ ENV CLANGPATH /opt/bolos-env/clang-arm-fropi/bin
 
 RUN apt-get update
 
-RUN apt-get install -y --no-install-recommends build-essential gcc-multilib g++-multilib libc6-dev-i386 python python-pil curl ca-certificates bzip2 xz-utils git make python3 python3-pip
+RUN apt-get install -y --no-install-recommends wget udev build-essential gcc-multilib g++-multilib libc6-dev-i386 libudev-dev libusb-1.0.0-dev curl ca-certificates bzip2 xz-utils git make python3 python3-pip python3-dev python3-setuptools
 
-RUN echo "Install PIL" && \
-  pip3 install Pillow
+RUN pip3 install wheel && pip3 install Pillow && pip3 install ledgerblue
 
 RUN echo "Create install directories" && \
   mkdir ${BOLOS_ENV} ${BOLOS_SDK}
@@ -34,6 +33,10 @@ RUN echo "Install custom clang" && \
 RUN echo "Install Ledger Nano S SDK" && \
   git clone https://github.com/LedgerHQ/nanos-secure-sdk.git ${BOLOS_SDK} && \
   cd ${BOLOS_SDK} && git checkout tags/nanos-160
+
+RUN wget -q -O - https://raw.githubusercontent.com/LedgerHQ/udev-rules/master/add_udev_rules.sh | bash
+
+RUN ln -s /usr/bin/python3 /usr/bin/python
 
 COPY ./bin/init /usr/local/bin/init
 
